@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  font-family: 'Pretendard', sans-serif;
+}
+
+body {
+  background-color: #f5f5f5;
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: 150% 0%; }
+  100% { background-position: -150% 0%; }
+}
+
+.banner-animate {
+  background: linear-gradient(
+    115deg,
+    #facc15 0%,
+    #facc15 35%,
+    #fef9c3 46%,
+    #fefce8 50%,
+    #fef9c3 54%,
+    #facc15 65%,
+    #facc15 100%
+  );
+  background-size: 250% 100%;
+  animation: float 3s ease-in-out infinite, shimmer 2.2s linear infinite;
+}
