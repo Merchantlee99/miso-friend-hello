@@ -1,6 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { postTemplates as daangnTemplates } from '../template_daangn'
 import { postTemplates as blogTemplates } from '../template_blog'
+import { postTemplates as momcafeTemplates } from '../template_momcafe'
+import { trackEvent } from '../analytics'
+
+type Channel = 'daangn' | 'blog' | 'momcafe'
 
 function randomIndex(length: number, current: number) {
   if (length <= 1) return 0
@@ -10,121 +14,68 @@ function randomIndex(length: number, current: number) {
 }
 
 export default function CopyTemplate() {
-  const [tab, setTab] = useState<'daangn' | 'blog'>('daangn')
-  const [daangnIdx, setDaangnIdx] = useState(() => Math.floor(Math.random() * daangnTemplates.length))
-  const [blogIdx, setBlogIdx] = useState(() => Math.floor(Math.random() * blogTemplates.length))
-  const [titleCopied, setTitleCopied] = useState(false)
-  const [bodyCopied, setBodyCopied] = useState(false)
+  const [tab, setTab] = useState<Channel>('daangn')
+  const [daangnIdx, setDaangnIdx] = useState(0)
+  const [blogIdx, setBlogIdx] = useState(0)
+  const [momcafeIdx, setMomcafeIdx] = useState(0)
+  const [copied, setCopied] = useState<'title' | 'body' | 'all' | null>(null)
+  const template = tab === 'daangn' ? daangnTemplates[daangnIdx] : tab === 'blog' ? blogTemplates[blogIdx] : momcafeTemplates[momcafeIdx]
 
-  const template = tab === 'daangn' ? daangnTemplates[daangnIdx] : blogTemplates[blogIdx]
+  useEffect(() => {
+    const selectChannel = (event: Event) => {
+      const channel = (event as CustomEvent<Channel>).detail
+      if (channel === 'daangn' || channel === 'blog' || channel === 'momcafe') {
+        setTab(channel)
+        setCopied(null)
+      }
+    }
+    window.addEventListener('miso:select-template-channel', selectChannel)
+    return () => window.removeEventListener('miso:select-template-channel', selectChannel)
+  }, [])
 
   const shuffle = () => {
-    if (tab === 'daangn') setDaangnIdx((i) => randomIndex(daangnTemplates.length, i))
-    else setBlogIdx((i) => randomIndex(blogTemplates.length, i))
-    setTitleCopied(false)
-    setBodyCopied(false)
+    if (tab === 'daangn') setDaangnIdx((index) => randomIndex(daangnTemplates.length, index))
+    if (tab === 'blog') setBlogIdx((index) => randomIndex(blogTemplates.length, index))
+    if (tab === 'momcafe') setMomcafeIdx((index) => randomIndex(momcafeTemplates.length, index))
+    setCopied(null)
   }
 
-  const copy = async (text: string, type: 'title' | 'body') => {
+  const selectTab = (channel: Channel) => {
+    setTab(channel)
+    setCopied(null)
+    trackEvent('channel_select', { channel, selection_area: 'template' })
+    window.dispatchEvent(new CustomEvent<Channel>('miso:select-guide-channel', { detail: channel }))
+  }
+
+  const copy = async (text: string, type: 'title' | 'body' | 'all') => {
     await navigator.clipboard.writeText(text)
-    if (type === 'title') {
-      setTitleCopied(true)
-      setTimeout(() => setTitleCopied(false), 2000)
-    } else {
-      setBodyCopied(true)
-      setTimeout(() => setBodyCopied(false), 2000)
-    }
+    setCopied(type)
+    trackEvent('template_copy', { channel: tab, copy_scope: type })
+    window.setTimeout(() => setCopied(null), 1800)
   }
 
   return (
-    <section id="copy-template" className="px-6 py-10">
-      <div className="flex items-center justify-between mb-1">
-        <h2 className="text-xl font-bold text-white">✍️ 이런 식으로 글쓰면 돼요</h2>
-        <button
-          onClick={shuffle}
-          className="flex flex-col items-center gap-0.5 active:scale-90 transition-transform"
-        >
-          <div className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-          </div>
-          <span className="text-white text-[10px] font-semibold">양식 바꾸기</span>
-        </button>
+    <section id="copy-template" className="bg-[#0C5BE8] px-5 py-14 text-white sm:px-7">
+      <div className="flex items-start justify-between gap-4">
+        <div><h2 className="text-[25px] font-extrabold leading-tight tracking-[-0.04em]">채널에 맞는 글을<br />바로 복사하세요.</h2><p className="mt-3 break-keep text-sm leading-6 text-blue-100">마음에 드는 문안으로 바꿔 사용할 수 있어요.</p></div>
+        <button onClick={shuffle} className="shrink-0 rounded-xl border border-white/25 px-3 py-2 text-xs font-bold text-white transition-colors hover:bg-white/10">다른 양식</button>
       </div>
-      <p className="text-sm text-blue-200 mb-4">복사해서 그대로 사용하세요!</p>
-
-      <div className="flex bg-white/20 rounded-xl p-1 mb-5">
-        <button
-          onClick={() => setTab('daangn')}
-          className={`flex-1 py-2 rounded-lg text-sm font-bold transition-colors ${
-            tab === 'daangn' ? 'bg-white text-primary' : 'text-white'
-          }`}
-        >
-          🥕 당근마켓
-        </button>
-        <button
-          onClick={() => setTab('blog')}
-          className={`flex-1 py-2 rounded-lg text-sm font-bold transition-colors ${
-            tab === 'blog' ? 'bg-white text-primary' : 'text-white'
-          }`}
-        >
-          📝 블로그·SNS
-        </button>
+      <div className="mt-7 grid grid-cols-3 rounded-2xl bg-white/15 p-1">
+        {([['daangn', '당근'], ['blog', '블로그'], ['momcafe', '맘카페']] as [Channel, string][]).map(([value, label]) => (
+          <button key={value} onClick={() => selectTab(value)} className={'rounded-xl px-2 py-3 text-sm font-bold transition-colors ' + (tab === value ? 'bg-white text-primary' : 'text-blue-100')}>{label}</button>
+        ))}
       </div>
-
-      {tab === 'blog' && (
-        <div className="bg-blue-900/40 border border-blue-300/30 rounded-2xl px-4 py-3 mb-4">
-          <p className="text-white text-sm leading-relaxed">
-            💡 본문의 <span className="font-bold text-yellow-300">[여기에 추천 링크 넣기]</span> 부분에 내 전용 링크를 꼭 넣어주세요!
-          </p>
-        </div>
-      )}
-
-      <div className="space-y-3">
-        <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-          <div className="px-4 py-2.5 border-b border-gray-100 flex items-center justify-between">
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">제목</p>
-            <button
-              onClick={() => copy(template.title, 'title')}
-              className={`px-3 py-1 rounded-lg font-semibold text-xs transition-colors ${
-                titleCopied ? 'bg-green-500 text-white' : 'bg-primary/10 text-primary'
-              }`}
-            >
-              {titleCopied ? '✓ 복사됨' : '복사하기'}
-            </button>
-          </div>
-          <div className="px-4 py-3">
-            <p className="text-gray-800 font-medium text-sm">{template.title}</p>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-          <div className="px-4 py-2.5 border-b border-gray-100 flex items-center justify-between">
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">본문</p>
-            <button
-              onClick={() => copy(template.body, 'body')}
-              className={`px-3 py-1 rounded-lg font-semibold text-xs transition-colors ${
-                bodyCopied ? 'bg-green-500 text-white' : 'bg-primary/10 text-primary'
-              }`}
-            >
-              {bodyCopied ? '✓ 복사됨' : '복사하기'}
-            </button>
-          </div>
-          <div className="px-4 py-3">
-            <p className="text-gray-800 font-medium text-sm leading-relaxed whitespace-pre-line">{template.body}</p>
-          </div>
-        </div>
+      {tab === 'blog' && <p className="mt-4 rounded-xl bg-white/10 px-4 py-3 text-xs leading-5 text-blue-50">본문의 추천 링크 자리에는 내 전용 링크를 넣어주세요.</p>}
+      {tab === 'momcafe' && <p className="mt-4 rounded-xl bg-white/10 px-4 py-3 text-xs leading-5 text-blue-50">정보 공유 톤으로 작성하고, 본문 마지막의 활동 안내 문구를 유지해 주세요.</p>}
+      <div className="mt-4 overflow-hidden rounded-[22px] bg-white text-slate-900">
+        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-3"><p className="text-xs font-bold text-slate-400">제목</p><button onClick={() => copy(template.title, 'title')} className="text-xs font-extrabold text-primary">{copied === 'title' ? '복사됨' : '제목 복사'}</button></div>
+        <p className="px-5 py-4 text-[15px] font-bold leading-6">{template.title}</p>
       </div>
-
-      <a
-        href="https://reviewevent.typeform.com/to/RcJAvPzi"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block w-full bg-white/20 text-white font-semibold text-base py-4 rounded-2xl mt-5 active:scale-95 transition-transform text-center"
-      >
-        바로 내가 쓴 글 인증하러 가기 →
-      </a>
+      <div className="mt-3 overflow-hidden rounded-[22px] bg-white text-slate-900">
+        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-3"><p className="text-xs font-bold text-slate-400">본문</p><button onClick={() => copy(template.body, 'body')} className="text-xs font-extrabold text-primary">{copied === 'body' ? '복사됨' : '본문 복사'}</button></div>
+        <p className="whitespace-pre-line px-5 py-4 text-sm leading-6 text-slate-700">{template.body}</p>
+      </div>
+      <button onClick={() => copy(template.title + '\n\n' + template.body, 'all')} className="mt-4 w-full rounded-2xl bg-white py-4 text-sm font-extrabold text-primary transition-transform active:scale-[0.98]">{copied === 'all' ? '제목과 본문을 복사했어요' : '제목과 본문 한 번에 복사'}</button>
     </section>
   )
 }
