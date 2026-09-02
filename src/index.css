@@ -2,43 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  font-family: 'Pretendard', sans-serif;
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: #edf4ff; color: #10213f; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+button, a { -webkit-tap-highlight-color: transparent; }
+#root { min-height: 100vh; }
+.page-shell { width: 100%; max-width: 430px; margin: 0 auto; overflow: hidden; background: #ffffff; }
+.hero-section { background: #ffffff; }
+.section-title { margin: 0; color: #10213f; font-size: 25px; font-weight: 800; line-height: 1.25; letter-spacing: -0.04em; word-break: keep-all; overflow-wrap: break-word; }
+.section-copy { margin: 0; color: #60708c; font-size: 15px; line-height: 1.7; word-break: keep-all; overflow-wrap: break-word; }
+.primary-button, .secondary-button { display: block; width: 100%; border-radius: 16px; padding: 16px 18px; text-align: center; font-size: 16px; font-weight: 800; letter-spacing: -0.03em; transition: transform 160ms ease; }
+.primary-button { border: 0; background: #0c5be8; color: #ffffff; }
+.secondary-button { background: #ffffff; color: #0c5be8; }
+.primary-button:active, .secondary-button:active { transform: scale(0.98); }
+
+.faq-summary { display: flex; cursor: pointer; list-style: none; align-items: center; justify-content: space-between; gap: 16px; color: #0f1f3d; font-weight: 700; }
+.faq-summary::-webkit-details-marker { display: none; }
+.faq-summary::after { content: '⌄'; flex: 0 0 auto; color: #0c5be8; font-size: 22px; font-weight: 700; line-height: 1; transition: transform 180ms ease; }
+details[open] .faq-summary::after { transform: rotate(180deg); }
+
+@keyframes reward-glow {
+  0%, 100% { box-shadow: 0 8px 18px rgba(162, 104, 0, 0.22), 0 0 0 0 rgba(255, 201, 40, 0.42); }
+  50% { box-shadow: 0 14px 34px rgba(162, 104, 0, 0.3), 0 0 0 10px rgba(255, 201, 40, 0); }
 }
 
-body {
-  background-color: #f5f5f5;
-  margin: 0;
-  padding: 0;
-}
+.reward-cta { animation: reward-glow 1.9s ease-in-out infinite; }
 
-#root {
-  display: flex;
-  justify-content: center;
-  min-height: 100vh;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-5px); }
-}
-
-@keyframes shimmer {
-  0% { background-position: 150% 0%; }
-  100% { background-position: -150% 0%; }
-}
-
-.banner-animate {
-  background: linear-gradient(
-    115deg,
-    #facc15 0%,
-    #facc15 35%,
-    #fef9c3 46%,
-    #fefce8 50%,
-    #fef9c3 54%,
-    #facc15 65%,
-    #facc15 100%
-  );
-  background-size: 250% 100%;
-  animation: float 3s ease-in-out infinite, shimmer 2.2s linear infinite;
+@media (prefers-reduced-motion: reduce) {
+  .reward-cta { animation: none; }
 }
