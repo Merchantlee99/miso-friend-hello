@@ -108,20 +108,20 @@ function GuidePage() {
           </div>
         </section>
 
-        {postingFlow === 'daangn' && <VideoCard title="당근에 글을 올리는 방법" src="/write_guide.mp4" videoId="daangn_posting" />}
+        {postingFlow === 'daangn' && <VideoCard title="당근에 글을 올리는 방법" src="https://miso-friend-hello-hrj4cxv4l-sanginns-projects.vercel.app/write_guide.mp4" videoId="daangn_posting" />}
         {postingFlow === 'blog' && <>
-          <VideoCard title="미소 앱에서 내 초대 링크 복사하기" src="/videos/miso-invite-link-guide.mp4" videoId="blog_invite_link" />
-          <VideoCard title="블로그에 글 올리기" src="/videos/blog-post-guide.mp4" videoId="blog_posting" />
+          <VideoCard title="미소 앱에서 내 초대 링크 복사하기" src="https://miso-friend-hello-hrj4cxv4l-sanginns-projects.vercel.app/videos/miso-invite-link-guide.mp4" videoId="blog_invite_link" />
+          <VideoCard title="블로그에 글 올리기" src="https://miso-friend-hello-hrj4cxv4l-sanginns-projects.vercel.app/videos/blog-post-guide.mp4" videoId="blog_posting" />
         </>}
-        {postingFlow === 'momcafe' && <VideoCard title="맘카페에 글 올리기" src="/videos/momcafe-post-guide.mp4" videoId="momcafe_posting" />}
+        {postingFlow === 'momcafe' && <VideoCard title="맘카페에 글 올리기" src="https://miso-friend-hello-hrj4cxv4l-sanginns-projects.vercel.app/videos/momcafe-post-guide.mp4" videoId="momcafe_posting" />}
 
-        {postingFlow === 'daangn' && <VideoCard title="당근에서 채팅이 오면 이렇게" src="/0423_guide.mp4" videoId="daangn_chat" />}
+        {postingFlow === 'daangn' && <VideoCard title="당근에서 채팅이 오면 이렇게" src="https://miso-friend-hello-hrj4cxv4l-sanginns-projects.vercel.app/0423_guide.mp4" videoId="daangn_chat" />}
 
         <section id="first-post-reward" className="bg-white px-5 py-14 sm:px-7">
           <div className="rounded-[28px] bg-[#DAE8F9] px-6 py-8 text-slate-950">
             <h2 className="text-2xl font-extrabold leading-tight tracking-[-0.04em]">첫 글을 올린 뒤,<br /><span className="text-primary">게시글 캡처를 보내주세요.</span></h2>
             <p className="mt-4 break-keep text-[15px] font-semibold leading-6 text-slate-600">아래 법인폰 번호로 문자 보내주시면<br />확인 후 첫 글 보상 5,000원을 드려요.</p>
-            <img src="/illustrations/referral-v1/post-proof-full-screen-v1.png" alt="게시글 전체 화면을 캡처해 인증하고 확인받는 과정" className="mx-auto mt-5 block w-full max-w-[290px]" />
+            <img src="https://miso-friend-hello-hrj4cxv4l-sanginns-projects.vercel.app/illustrations/referral-v1/post-proof-full-screen-v1.png" alt="게시글 전체 화면을 캡처해 인증하고 확인받는 과정" className="mx-auto mt-5 block w-full max-w-[290px]" />
             <a href={`sms:${corporatePhoneDigits}`} onClick={() => trackEvent('cta_click', { cta_location: 'post_proof', cta_type: 'first_post_certification', destination_type: 'sms' })} className="mt-5 flex w-full items-center justify-center rounded-2xl bg-primary py-4 text-base font-extrabold text-white transition-transform active:scale-[0.98]">법인폰 {corporatePhone} 문자 보내기</a>
           </div>
         </section>
