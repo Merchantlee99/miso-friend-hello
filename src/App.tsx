@@ -104,7 +104,7 @@ function GuidePage() {
         <section className="bg-white px-5 py-10 sm:px-7">
           <div className="rounded-3xl border border-blue-100 bg-[#F4F8FF] px-6 py-7">
             <p className="break-keep text-lg font-extrabold leading-7 tracking-[-0.03em] text-slate-950">소개 활동하고 싶은 SNS를<br />문자로 보내주시면 제목과 본문을 알려드릴게요.</p>
-            <a href={`sms:${corporatePhoneDigits}`} onClick={() => trackEvent('cta_click', { cta_location: 'sns_copy_request', cta_type: 'sms', destination_type: 'sms' })} className="mt-5 flex w-full items-center justify-center rounded-2xl bg-primary py-4 text-base font-extrabold text-white transition-transform active:scale-[0.98]">법인폰 {corporatePhone} 문자 보내기</a>
+            <a href={`sms:${corporatePhoneDigits}`} onClick={() => trackEvent('cta_click', { cta_location: 'sns_copy_request', cta_type: 'sms', destination_type: 'sms' })} className="mt-5 flex w-full items-center justify-center rounded-2xl bg-primary py-4 text-base font-extrabold text-white transition-transform active:scale-[0.98]">{corporatePhone} 문자 보내기</a>
           </div>
         </section>
 
@@ -122,7 +122,7 @@ function GuidePage() {
             <h2 className="text-2xl font-extrabold leading-tight tracking-[-0.04em]">첫 글을 올린 뒤,<br /><span className="text-primary">게시글 캡처를 보내주세요.</span></h2>
             <p className="mt-4 break-keep text-[15px] font-semibold leading-6 text-slate-600">아래 법인폰 번호로 문자 보내주시면<br />확인 후 첫 글 보상 5,000원을 드려요.</p>
             <img src="https://miso-friend-hello-hrj4cxv4l-sanginns-projects.vercel.app/illustrations/referral-v1/post-proof-full-screen-v1.png" alt="게시글 전체 화면을 캡처해 인증하고 확인받는 과정" className="mx-auto mt-5 block w-full max-w-[290px]" />
-            <a href={`sms:${corporatePhoneDigits}`} onClick={() => trackEvent('cta_click', { cta_location: 'post_proof', cta_type: 'first_post_certification', destination_type: 'sms' })} className="mt-5 flex w-full items-center justify-center rounded-2xl bg-primary py-4 text-base font-extrabold text-white transition-transform active:scale-[0.98]">법인폰 {corporatePhone} 문자 보내기</a>
+            <a href={`sms:${corporatePhoneDigits}`} onClick={() => trackEvent('cta_click', { cta_location: 'post_proof', cta_type: 'first_post_certification', destination_type: 'sms' })} className="mt-5 flex w-full items-center justify-center rounded-2xl bg-primary py-4 text-base font-extrabold text-white transition-transform active:scale-[0.98]">{corporatePhone} 문자 보내기</a>
           </div>
         </section>
 
