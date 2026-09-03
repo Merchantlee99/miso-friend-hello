@@ -21,6 +21,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .faq-summary::after { content: '⌄'; flex: 0 0 auto; color: #0c5be8; font-size: 22px; font-weight: 700; line-height: 1; transition: transform 180ms ease; }
 details[open] .faq-summary::after { transform: rotate(180deg); }
 
+
 @keyframes reward-glow {
   0%, 100% { box-shadow: 0 8px 18px rgba(162, 104, 0, 0.22), 0 0 0 0 rgba(255, 201, 40, 0.42); }
   50% { box-shadow: 0 14px 34px rgba(162, 104, 0, 0.3), 0 0 0 10px rgba(255, 201, 40, 0); }

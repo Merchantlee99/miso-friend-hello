@@ -1,4 +1,7 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist"
+  "buildCommand": "pnpm run build",
+  "rewrites": [
+    { "source": "/apply", "destination": "/index.html" },
+    { "source": "/guide", "destination": "/index.html" }
+  ]
 }
