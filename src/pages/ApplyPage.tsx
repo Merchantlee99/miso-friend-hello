@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from 'react'
+import { type FormEvent, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { trackEvent } from '../analytics'
 
@@ -14,14 +14,29 @@ export default function ApplyPage() {
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [toast, setToast] = useState(false)
+  const submitRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    trackEvent('application_view')
+    if (!submitRef.current) return
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        trackEvent('application_submit_impression')
+        observer.disconnect()
+      }
+    })
+    observer.observe(submitRef.current)
+    return () => observer.disconnect()
+  }, [])
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const phoneDigits = normalisePhone(phone)
+    trackEvent('application_submit_attempt', { has_name: Boolean(name.trim()), has_phone: Boolean(phoneDigits), has_consent: agreed })
 
-    if (!name.trim()) return setError('성함을 입력해 주세요.')
-    if (phoneDigits.length < 10 || phoneDigits.length > 11) return setError('연락처를 다시 확인해 주세요.')
-    if (!agreed) return setError('개인정보 수집·이용에 동의해 주세요.')
+    if (!name.trim()) { trackEvent('application_validation_error', { field: 'name' }); return setError('성함을 입력해 주세요.') }
+    if (phoneDigits.length < 10 || phoneDigits.length > 11) { trackEvent('application_validation_error', { field: 'phone' }); return setError('연락처를 다시 확인해 주세요.') }
+    if (!agreed) { trackEvent('application_validation_error', { field: 'consent' }); return setError('개인정보 수집·이용에 동의해 주세요.') }
 
     setIsSubmitting(true)
     try {
@@ -38,6 +53,7 @@ export default function ApplyPage() {
       setToast(true)
       window.setTimeout(() => navigate('/guide'), 1300)
     } catch (submissionError) {
+      trackEvent('application_submit_error', { error_type: 'request_failed' })
       setError(submissionError instanceof Error ? submissionError.message : '신청 정보를 저장하지 못했습니다.')
       setIsSubmitting(false)
     }
@@ -52,19 +68,19 @@ export default function ApplyPage() {
         <form onSubmit={handleSubmit} className="mt-10 flex flex-1 flex-col" noValidate>
           <div className="space-y-5">
             <label className="block">
-              <input aria-label="성함" value={name} onChange={(event) => { setName(event.target.value); setError('') }} autoComplete="name" placeholder="성함" className="w-full rounded-2xl border border-slate-200 px-5 py-4 text-[16px] font-semibold text-slate-950 outline-none transition-colors placeholder:text-slate-400 focus:border-primary" />
+              <input aria-label="성함" value={name} onFocus={() => trackEvent('application_field_focus', { field: 'name' })} onChange={(event) => { setName(event.target.value); setError('') }} autoComplete="name" placeholder="성함" className="w-full rounded-2xl border border-slate-200 px-5 py-4 text-[16px] font-semibold text-slate-950 outline-none transition-colors placeholder:text-slate-400 focus:border-primary" />
             </label>
             <label className="block">
-              <input aria-label="연락처" value={phone} onChange={(event) => { setPhone(event.target.value); setError('') }} inputMode="tel" autoComplete="tel" placeholder="연락처" className="w-full rounded-2xl border border-slate-200 px-5 py-4 text-[16px] font-semibold text-slate-950 outline-none transition-colors placeholder:text-slate-400 focus:border-primary" />
+              <input aria-label="연락처" value={phone} onFocus={() => trackEvent('application_field_focus', { field: 'phone' })} onChange={(event) => { setPhone(event.target.value); setError('') }} inputMode="tel" autoComplete="tel" placeholder="연락처" className="w-full rounded-2xl border border-slate-200 px-5 py-4 text-[16px] font-semibold text-slate-950 outline-none transition-colors placeholder:text-slate-400 focus:border-primary" />
             </label>
           </div>
           <div className="mt-auto space-y-3">
             <label className="flex cursor-pointer items-start gap-3 rounded-2xl bg-slate-50 px-4 py-4">
-              <input type="checkbox" checked={agreed} onChange={(event) => { setAgreed(event.target.checked); setError('') }} className="mt-0.5 h-5 w-5 accent-[#0C5BE8]" />
+              <input type="checkbox" checked={agreed} onChange={(event) => { setAgreed(event.target.checked); trackEvent('application_consent_toggle', { consent: event.target.checked }); setError('') }} className="mt-0.5 h-5 w-5 accent-[#0C5BE8]" />
               <span className="text-sm leading-6 text-slate-700"><strong className="font-extrabold text-slate-900">개인정보 수집·이용에 동의합니다.</strong><br />상담 연결을 위해 성함과 연락처를 수집합니다.</span>
             </label>
             {error && <p role="alert" className="text-sm font-bold text-red-600">{error}</p>}
-            <button type="submit" disabled={isSubmitting} className="primary-button disabled:cursor-wait disabled:opacity-60">{isSubmitting ? '제출 중...' : '제출하고 다음'}</button>
+            <button ref={submitRef} type="submit" disabled={isSubmitting} className="primary-button disabled:cursor-wait disabled:opacity-60">{isSubmitting ? '제출 중...' : '제출하고 다음'}</button>
           </div>
         </form>
       </section>

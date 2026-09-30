@@ -1,0 +1,12 @@
+.git
+node_modules
+dist
+.audit-screens
+design-audit
+.codex-gh.*
+docs
+content
+scripts
+design-qa.md
+media/
+*.tsbuildinfo
